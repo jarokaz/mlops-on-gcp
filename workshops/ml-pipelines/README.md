@@ -73,30 +73,15 @@ gsutil cp ${SDK_LOCATION} /tmp/tfx-0.22.0.caip-py3-none-any.whl && pip install -
 ```
 
 
-
-In the **JupyterLab**, open a terminal and clone this repository in the `home` folder.
-```
-cd
-git clone https://github.com/GoogleCloudPlatform/mlops-on-gcp.git
-```
-
-From the `mlops-labs/workshops/tfx-caip-tf21` folder execute the `install.sh` script to install **TFX** and **KFP** SDKs.
-
-```
-cd mlops-on-gcp/workshops/tfx-caip-tf21
-./install.sh
-```
-
 ## Summary of lab exercises
 
 ### Lab-01 - TFX Components walk-through
 In this lab, you will step through the configuration and execution of core TFX components using TFX interactive context. The primary goal of the lab is to get a high level understanding of a function and usage of each of the components. 
 
-### Lab-02 - Orchestrating model training and deployment with TFX and Cloud AI Platform
-In this lab you will develop, deploy and run a TFX pipeline that uses  Cloud Dataflow and Cloud AI Platform as execution runtimes.
+### Lab-02 - Implementing continuous training pipeline for TensorFlow
+In this lab you will develop, deploy and run a pipeline that uses TFX components to train and deploy a TensorFlow model.
 
-### Lab-03 - CI/CD for a TFX pipeline
-In this lab you will author a **Cloud Build** CI/CD workflow that automatically builds and deploys a TFX pipeline. You will also integrate your workflow with **GitHub**.
+### Lab-03 - Implementing continuous training pipeline for BQML
+In this lab you will develop, deploy and run a pipeline that uses custom components to train and deploy a BQML model.
 
-### Lab-04 - ML Metadata
-In this lab, you will explore ML metadata and ML artifacts created by TFX pipeline runs.
+
