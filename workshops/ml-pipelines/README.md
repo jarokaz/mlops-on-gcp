@@ -70,7 +70,8 @@ pip install pip --upgrade
 export SDK_VERSION='tfx-0.22.0.caip-py3-none-any'
 export SDK_VERSION='tfx-0.23.0.caip20200818'
 export SDK_LOCATION='gs://caip-pipelines-sdk/releases/latest/${SDK_VERSION}.whl'
-gsutil cp ${SDK_LOCATION} /tmp/${SDK_VERSION}.whl && pip install --user --no-cache-dir /tmp/${SDK_VERSION}.whl
+gsutil cp ${SDK_LOCATION} /tmp/${SDK_VERSION}.whl 
+pip install --user --no-cache-dir /tmp/${SDK_VERSION}.whl
 ```
 
 
