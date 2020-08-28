@@ -34,6 +34,7 @@ To enable auxiliary services:
 2. Set your project ID
 ```
 PROJECT_ID=[YOUR PROJECT ID]
+PROJECT_NUMBER=[YOUR PROJECT NUMBER]
 
 gcloud config set project $PROJECT_ID
 ```
