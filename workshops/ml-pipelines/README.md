@@ -9,16 +9,17 @@ You will use the lab environment configured as on the below diagram:
 ![Lab env](/images/managed-lab.png)
 
 The core services in the environment are:
-- ML experimentation and development - AI Platform Notebooks 
-- Scalable, serverless model training - AI Platform Training  
-- Scalable, serverless model serving - AI Platform Prediction 
-- Machine learning pipelines - AI Platform Pipelines
+- Unified ML Platform 
+    - ML experimentation and development - AI Platform Notebooks 
+    - Serverless model training - AI Platform Training  
+    - Serverless model serving and monitoring - AI Platform Prediction 
+    - Orchestration and ML Metadata  - AI Platform Managed Pipelines
 - Distributed data processing - Cloud Dataflow  
 - Analytics data warehouse - BigQuery 
-- Artifact store - Google Cloud Storage 
-- CI/CD tooling - Cloud Build
+- Artifact and data stores - Google Cloud Storage 
+
     
-In this environment, all services are provisioned in the same [Google Cloud Project](https://cloud.google.com/storage/docs/projects). 
+In the lab environment, all services are provisioned in the same [Google Cloud Project](https://cloud.google.com/storage/docs/projects). 
 
 ### Enabling Cloud Services
 
