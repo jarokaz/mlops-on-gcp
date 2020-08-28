@@ -9,15 +9,16 @@ You will use the lab environment configured as on the below diagram:
 ![Lab env](/images/managed-lab.png)
 
 The core services in the environment are:
-- Unified ML Platform 
+- Unified AI Platform 
     - ML experimentation and development - AI Platform Notebooks 
     - Serverless model training - AI Platform Training  
     - Serverless model serving and monitoring - AI Platform Prediction 
     - Orchestration and ML Metadata  - AI Platform Managed Pipelines
-- Distributed data processing - Cloud Dataflow  
-- Analytics data warehouse - BigQuery 
-- ML artifact and data stores - Google Cloud Storage 
-- Container images - Container Registry
+- Auxiliary services:
+    - Distributed data processing - Cloud Dataflow  
+    - Analytics data warehouse - BigQuery 
+    - ML artifact and data stores - Google Cloud Storage 
+    - Container images - Container Registry
 
     
 In the lab environment, all services are provisioned in the same [Google Cloud Project](https://cloud.google.com/storage/docs/projects). 
