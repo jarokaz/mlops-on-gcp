@@ -77,7 +77,6 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 export GCR_REGISTRY=artifacts.${PROJECT_ID}.appspot.com 
 
 gsutil iam ch serviceAccount:service-${PROJECT_NUMBER}@cloud-ml.google.com.iam.gserviceaccount.com:objectViewer gs://${GCR_REGISTRY}
-
 gsutil iam ch serviceAccount:service-${PROJECT_NUMBER}@cloud-ml-alpha-robot.iam.gserviceaccount.com:objectViewer gs://${GCR_REGISTRY}
 
 ```
