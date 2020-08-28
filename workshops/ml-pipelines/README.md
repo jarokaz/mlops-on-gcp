@@ -26,7 +26,8 @@ In the lab environment, all services are provisioned in the same [Google Cloud P
 ### Enabling Cloud Services
 
 To enable uCAIP services follow the EAP onboarding process
-*Instructions will be updated when the services enter Beta
+
+*Instructions will be updated when the services enter Beta*
 
 To enable auxiliary services:
 1. Launch [Cloud Shell](https://cloud.google.com/shell/docs/launching-cloud-shell)
