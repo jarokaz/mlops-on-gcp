@@ -49,6 +49,29 @@ ml.googleapis.com \
 dataflow.googleapis.com 
 ```
 
+### Setting roles and permissions
+
+From [Cloud Shell](https://cloud.google.com/shell/docs/launching-cloud-shell)
+
+1. Set AI Platform permissions
+```
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+--member=serviceAccount:service-${PROJECT_NUMBER}@cloud-ml-alpha-robot.iam.gserviceaccount.com \
+--role=roles/ml.admin
+```
+2. Set Cloud Dataflow permissions
+```
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+--member=serviceAccount:service-${PROJECT_NUMBER}@cloud-ml.google.com.iam.gserviceaccount.com \
+--role=roles/dataflow.developer
+```
+3. Set BigQuery permissions
+```
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+--member=serviceAccount:service-${PROJECT_NUMBER}@cloud-ml.google.com.iam.gserviceaccount.com \
+--role=roles/bigquery.user
+```
+
 ### Creating an instance of AI Platform Notebooks
 
 An instance of **AI Platform Notebooks** is used as a primary experimentation/development workbench.
