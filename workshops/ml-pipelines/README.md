@@ -72,6 +72,16 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 --role=roles/bigquery.user
 ```
 
+4. Set Container Registry permissions
+```
+export GCR_REGISTRY=artifacts.${PROJECT_ID}.appspot.com 
+
+gsutil iam ch serviceAccount:service-${PROJECT_NUMBER}@cloud-ml.google.com.iam.gserviceaccount.com:objectViewer gs://${GCR_REGISTRY}
+
+gsutil iam ch serviceAccount:service-${PROJECT_NUMBER}@cloud-ml-alpha-robot.iam.gserviceaccount.com:objectViewer gs://${GCR_REGISTRY}
+
+```
+
 ### Creating an instance of AI Platform Notebooks
 
 An instance of **AI Platform Notebooks** is used as a primary experimentation/development workbench.
