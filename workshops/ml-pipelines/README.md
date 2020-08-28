@@ -40,7 +40,6 @@ gcloud config set project $PROJECT_ID
 3. Use `gcloud` to enable the services
 ```
 gcloud services enable \
-cloudbuild.googleapis.com \
 container.googleapis.com \
 cloudresourcemanager.googleapis.com \
 iam.googleapis.com \
