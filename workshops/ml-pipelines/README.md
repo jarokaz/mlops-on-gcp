@@ -25,7 +25,7 @@ In the lab environment, all services are provisioned in the same [Google Cloud P
 
 ### Enabling Cloud Services
 
-To enable uCAIP services follow the EAP onboarding process
+To enable and configure uCAIP services follow the EAP onboarding process
 
 *Instructions will be updated when the services enter Beta*
 
@@ -54,9 +54,25 @@ dataflow.googleapis.com
 
 An instance of **AI Platform Notebooks** is used as a primary experimentation/development workbench.
 
-To provision the instance follow the [Create an new notebook instance](https://cloud.google.com/ai-platform/notebooks/docs/create-new) setup guide. Use the *TensorFlow Enterprise 2.1* no-GPU image. Leave all other settings at their default values.
+To provision the instance follow the [Create an new notebook instance](https://cloud.google.com/ai-platform/notebooks/docs/create-new) setup guide. Use the *Python 2 and 3 image* no-GPU image. Leave all other settings at their default values.
 
 After the instance is created, you can connect to [JupyterLab](https://jupyter.org/) IDE by clicking the *OPEN JUPYTERLAB* link in the [AI Platform Notebooks Console](https://console.cloud.google.com/ai-platform/notebooks/instances).
+
+### Installing TFX SDK
+
+1. In the **JupyterLab**, open a new terminal
+2. Install Skaffold
+```
+curl -Lo skaffold  https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && chmod +x skaffold && mkdir -p /home/jupyter/.local/bin && mv skaffold /home/jupyter/.local/bin/
+```
+4. Install TFX SDK
+```
+pip install pip --upgrade
+export SDK_LOCATION='gs://caip-pipelines-sdk/releases/latest/tfx-0.22.0.caip.latest-py3-none-any.whl'
+gsutil cp ${SDK_LOCATION} /tmp/tfx-0.22.0.caip-py3-none-any.whl && pip install --no-cache-dir /tmp/tfx-0.22.0.caip-py3-none-any.whl
+```
+
+
 
 In the **JupyterLab**, open a terminal and clone this repository in the `home` folder.
 ```
