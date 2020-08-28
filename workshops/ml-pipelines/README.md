@@ -69,9 +69,9 @@ curl -Lo skaffold  https://storage.googleapis.com/skaffold/releases/latest/skaff
 pip install pip --upgrade
 export SDK_VERSION='tfx-0.22.0.caip.latest-py3-none-any.whl'
 export SDK_VERSION='tfx-0.23.0.caip.latest-py3-none-any.whl'
-export SDK_LOCATION='gs://caip-pipelines-sdk/releases/latest/${SDK_VERSION}.whl'
-gsutil cp ${SDK_LOCATION} /tmp/${SDK_VERSION}.whl 
-pip install --user --no-cache-dir /tmp/${SDK_VERSION}.whl
+export SDK_LOCATION='gs://caip-pipelines-sdk/releases/latest/${SDK_VERSION}'
+gsutil cp ${SDK_LOCATION} /tmp/${SDK_VERSION} 
+pip install --user --no-cache-dir /tmp/${SDK_VERSION}
 ```
 
 
