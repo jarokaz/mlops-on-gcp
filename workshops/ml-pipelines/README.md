@@ -65,7 +65,7 @@ After the instance is created, you can connect to [JupyterLab](https://jupyter.o
 ```
 curl -Lo skaffold  https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && chmod +x skaffold && mkdir -p /home/jupyter/.local/bin && mv skaffold /home/jupyter/.local/bin/
 ```
-4. Install TFX SDK
+3. Install TFX SDK
 ```
 pip install pip --upgrade
 export SDK_LOCATION='gs://caip-pipelines-sdk/releases/latest/tfx-0.22.0.caip.latest-py3-none-any.whl'
