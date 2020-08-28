@@ -6,7 +6,7 @@ This series of hands on labs introduces core concepts and development techniques
 ## Preparing the lab environment
 You will use the lab environment configured as on the below diagram:
 
-![Lab env](/images/lab-env.png)
+![Lab env](/images/managed-lab.png)
 
 The core services in the environment are:
 - ML experimentation and development - AI Platform Notebooks 
