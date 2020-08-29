@@ -1,0 +1,14 @@
+
+apiVersion: skaffold/v2beta3
+kind: Config
+metadata:
+  name: my-pipeline
+build:
+  artifacts:
+  - image: 'gcr.io/mlops-dev-env/caip-tfx-custom'
+    context: .
+    docker:
+      dockerfile: Dockerfile
+  tagPolicy:
+    envTemplate:
+      template: "{{.IMAGE_NAME}}:latest"
