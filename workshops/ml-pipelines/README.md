@@ -90,6 +90,9 @@ To provision the instance follow the [Create an new notebook instance](https://c
 
 After the instance is created, you can connect to [JupyterLab](https://jupyter.org/) IDE by clicking the *OPEN JUPYTERLAB* link in the [AI Platform Notebooks Console](https://console.cloud.google.com/ai-platform/notebooks/instances).
 
+
+
+
 ### Installing TFX SDK
 
 1. In the **JupyterLab**, open a new terminal
@@ -105,6 +108,13 @@ export SDK_VERSION='tfx-0.23.0.caip.latest-py3-none-any.whl'
 export SDK_LOCATION=gs://caip-pipelines-sdk/releases/latest/${SDK_VERSION}
 gsutil cp ${SDK_LOCATION} /tmp/${SDK_VERSION} 
 pip install --user --no-cache-dir /tmp/${SDK_VERSION}
+```
+
+### Configuring TFMA visualizations
+```
+jupyter nbextension enable --py widgetsnbextension
+jupyter nbextension install --py --sys-prefix --symlink tensorflow_model_analysis
+jupyter nbextension enable --py --sys-prefix tensorflow_model_analysis
 ```
 
 
