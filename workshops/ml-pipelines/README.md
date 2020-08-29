@@ -86,7 +86,7 @@ gsutil iam ch serviceAccount:service-${PROJECT_NUMBER}@cloud-ml-alpha-robot.iam.
 
 An instance of **AI Platform Notebooks** is used as a primary experimentation/development workbench.
 
-To provision the instance follow the [Create an new notebook instance](https://cloud.google.com/ai-platform/notebooks/docs/create-new) setup guide. Use the *Python 2 and 3 image* no-GPU image. Leave all other settings at their default values.
+To provision the instance follow the [Create an new notebook instance](https://cloud.google.com/ai-platform/notebooks/docs/create-new) setup guide. Use the *TensorFlow 2.3* no-GPU image. Leave all other settings at their default values.
 
 After the instance is created, you can connect to [JupyterLab](https://jupyter.org/) IDE by clicking the *OPEN JUPYTERLAB* link in the [AI Platform Notebooks Console](https://console.cloud.google.com/ai-platform/notebooks/instances).
 
