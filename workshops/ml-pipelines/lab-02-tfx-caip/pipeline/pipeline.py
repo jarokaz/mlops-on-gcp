@@ -31,14 +31,12 @@ from tfx.types import standard_artifacts
 
 
 SCHEMA_FOLDER = 'schema'
-TRANSFORM_MODULE_FILE = 'preprocessing.py'
-TRAIN_MODULE_FILE = 'model.py'
-
 
 def create_pipeline(
     pipeline_name: Text,
     pipeline_root: Text,
     data_root: Text,
+    schema_uri: Text,
     #preprocessing_fn: Text,
     #run_fn: Text,
     #train_args: trainer_pb2.TrainArgs,
@@ -61,6 +59,7 @@ def create_pipeline(
                     example_gen_pb2.SplitConfig.Split(name='eval', hash_buckets=1)]))
 
     example_gen = tfx.components.CsvExampleGen(
+        instance_name='import_csv_data',
         input_base=data_root,
         output_config=output_config)
 
@@ -68,33 +67,42 @@ def create_pipeline(
 
     # Computes statistics over data for visualization and example validation.
     statistics_gen = tfx.components.StatisticsGen(
+        instance_name='generate_statistics',
         examples=example_gen.outputs.examples)
 
     components.append(statistics_gen)
 
-  #  # Import a user-provided schema
-  #  import_schema = ImporterNode(instance_name='import_user_schema',
-  #                               source_uri=SCHEMA_FOLDER,
-  #                               artifact_type=standard_artifacts.Schema)
+    # Import a user-provided schema
+    schema_importer = tfx.components.ImporterNode(instance_name='import_user_schema',
+                                 source_uri=schema_uri,
+                                 artifact_type=standard_artifacts.Schema)
+    
+    components.append(schema_importer)
 
-  #  # Generates schema based on statistics files.Even though, we use user-provided schema
-  #  # we still want to generate the schema of the newest data for tracking and comparison
-  #  infer_schema = SchemaGen(statistics=generate_statistics.outputs.statistics)
-  #
-  #  # Performs anomaly detection based on statistics and data schema.
-  #  validate_stats = ExampleValidator(
-  #      statistics=generate_statistics.outputs.statistics, 
-  #      schema=import_schema.outputs.result)
-  #
+    # Generates schema based on statistics files.Even though, we use user-provided schema
+    # we still want to generate the schema of the newest data for tracking and comparison
+    schema_gen = tfx.components.SchemaGen(
+        instance_name='auto_generate_schema',
+        statistics=statistics_gen.outputs.statistics)
+    
+    components.append(schema_gen)
+  
+    # Performs anomaly detection based on statistics and data schema.
+    example_validator = tfx.components.ExampleValidator(
+        statistics=statistics_gen.outputs.statistics, 
+        schema=schema_importer.outputs.result)
+    
+    components.append(example_validator)
+  
   #  # Performs transformations and feature engineering in training and serving.
-  #  transform = Transform(
+  #  transform = tfx.components.Transform(
   #      examples=generate_examples.outputs.examples,
   #      schema=import_schema.outputs.result,
   #      module_file=TRANSFORM_MODULE_FILE)
   #
   #  
   #  # Trains the model using a user provided trainer function.
-  #  train = Trainer(
+  #  train = tfx.components.Trainer(
   #      custom_executor_spec=executor_spec.ExecutorClassSpec(
   #          ai_platform_trainer_executor.GenericExecutor),
   ##      custom_executor_spec=executor_spec.ExecutorClassSpec(trainer_executor.GenericExecutor),
@@ -107,7 +115,7 @@ def create_pipeline(
   #      custom_config={'ai_platform_training_args': ai_platform_training_args})
   #
   #  # Get the latest blessed model for model validation.
-  #  resolve = ResolverNode(
+  #  resolve = tfx.components.ResolverNode(
   #      instance_name='latest_blessed_model_resolver',
   #      resolver_class=latest_blessed_model_resolver.LatestBlessedModelResolver,
   #      model=Channel(type=Model),
@@ -141,42 +149,18 @@ def create_pipeline(
   #  )
   #  
   #
-  #  analyze = Evaluator(
+  #  analyze = tfx.components.Evaluator(
   #      examples=generate_examples.outputs.examples,
   #      model=train.outputs.model,
   #      baseline_model=resolve.outputs.model,
   #      eval_config=eval_config
   #  )
   #
-  #  # Validate model can be loaded and queried in sand-boxed environment 
-  #  # mirroring production.
-  #  serving_config = infra_validator_pb2.ServingSpec(
-  #      tensorflow_serving=infra_validator_pb2.TensorFlowServing(
-  #          tags=['latest']),
-  #      local_docker=infra_validator_pb2.LocalDockerConfig(),
-  #  )
-  #  
-  #  validation_config = infra_validator_pb2.ValidationSpec(
-  #      max_loading_time_seconds=60,
-  #      num_tries=3,
-  #  )
-  #  
-  #  request_config = infra_validator_pb2.RequestSpec(
-  #      tensorflow_serving=infra_validator_pb2.TensorFlowServingRequestSpec(),
-  #      num_examples=3,
-  #  )
-  #    
-  #  infra_validate = InfraValidator(
-  #      model=train.outputs['model'],
-  #      examples=generate_examples.outputs['examples'],
-  #      serving_spec=serving_config,
-  #      validation_spec=validation_config,
-  #      request_spec=request_config,
-  #  )
+  
   
   # Checks whether the model passed the validation steps and pushes the model
   # to a file destination if check passed.
-  #  deploy = Pusher(
+  #  deploy = tfx.components.Pusher(
   #      model=train.outputs['model'],
   #      model_blessing=analyze.outputs['blessing'],
   #      infra_blessing=infra_validate.outputs['blessing'],
@@ -185,7 +169,7 @@ def create_pipeline(
   #              base_directory=os.path.join(
   #                  str(pipeline.ROOT_PARAMETER), 'model_serving'))))
   #             
-  # deploy = Pusher(
+  # deploy = tfx.components.Pusher(
   #    custom_executor_spec=executor_spec.ExecutorClassSpec(
   #        ai_platform_pusher_executor.Executor),
   #    model=train.outputs.model,

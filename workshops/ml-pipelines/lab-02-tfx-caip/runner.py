@@ -46,13 +46,17 @@ if __name__ == '__main__':
        '--experiments=shuffle_mode=auto',
        '--project=' + project_id,
        '--temp_location=' + beam_tmp_folder,
+       '--machine_type=' + configs.DATAFLOW_MACHINE_TYPE,
+       '--disk_size_gb=' + configs.DATAFLOW_DISK_SIZE,
        '--region=' + configs.GCP_REGION]
     
+    #beam_pipeline_args = None
     
     pipeline = pipeline.create_pipeline(
         pipeline_name=configs.PIPELINE_NAME,
         pipeline_root=pipeline_root,
         data_root=configs.DATA_ROOT,
+        schema_uri=configs.SCHEMA_URI,
         beam_pipeline_args=beam_pipeline_args)
    
     runner_config = ai_platform_pipelines_dag_runner.AIPlatformPipelinesDagRunnerConfig(

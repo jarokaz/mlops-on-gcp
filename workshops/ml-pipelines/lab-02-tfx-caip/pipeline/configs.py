@@ -20,9 +20,11 @@ import os
 PIPELINE_NAME=os.getenv("PIPELINE_NAME", "tfx_covertype_continuous_training")
 ARTIFACT_STORE=os.getenv("ARTIFACT_STORE", "gs://mlops-dev-env-artifact-store")
 DATA_ROOT=os.getenv("DATA_ROOT", "gs://workshop-datasets/covertype/small")
+SCHEMA_URI=os.getenv("SCHEMA_URI", "schema")
 GCP_REGION=os.getenv("GCP_REGION", "us-central1")
+DATAFLOW_MACHINE_TYPE=os.getenv("DATAFLOW_MACHINE_TYPE", "n1-standard-8")
+DATAFLOW_DISK_SIZE=os.getenv("DATAFLOW_DISK_SIZE", "100")
 
 #MODEL_NAME=os.getenv("MODEL_NAME", "covertype_classifier")
 #RUNTIME_VERSION=os.getenv("RUNTIME_VERSION", "2.1")
 #PYTHON_VERSION=os.getenv("PYTHON_VERSION", "3.7")
- 
