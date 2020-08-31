@@ -1,0 +1,11 @@
+apiVersion: skaffold/v1beta13
+build:
+  artifacts:
+  - context: .
+    docker:
+      dockerfile: Dockerfile
+    image: gcr.io/mlops-dev-env/tfx-template-JK
+  tagPolicy:
+    envTemplate:
+      template: latest
+kind: Config
