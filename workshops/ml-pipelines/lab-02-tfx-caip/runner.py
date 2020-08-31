@@ -37,20 +37,23 @@ if __name__ == '__main__':
     project_id = os.environ.get(labels.CAIPP_GCP_PROJECT_ID_ENV)
     api_key = os.environ.get(labels.CAIPP_API_KEY_ENV)
 
-    print('****************')
-    print(tfx_image)
-    print(api_key)
-    print(project_id)
-    print(configs.ARTIFACT_STORE)
-    print(os.environ.get('ARTIFACT_STORE'))
-    print('*****************')
-
     pipeline_root = '{}/{}'.format(configs.ARTIFACT_STORE,
                                    configs.PIPELINE_NAME)
+    
+    beam_tmp_folder = '{}/beam/tmp'.format(configs.ARTIFACT_STORE)
+    beam_pipeline_args = [
+       '--runner=DataflowRunner',
+       '--experiments=shuffle_mode=auto',
+       '--project=' + project_id,
+       '--temp_location=' + beam_tmp_folder,
+       '--region=' + configs.GCP_REGION]
+    
+    
     pipeline = pipeline.create_pipeline(
         pipeline_name=configs.PIPELINE_NAME,
         pipeline_root=pipeline_root,
-        data_root=configs.DATA_ROOT)
+        data_root=configs.DATA_ROOT,
+        beam_pipeline_args=beam_pipeline_args)
    
     runner_config = ai_platform_pipelines_dag_runner.AIPlatformPipelinesDagRunnerConfig(
         project_id=project_id,
@@ -63,12 +66,10 @@ if __name__ == '__main__':
 
     if os.environ.get(labels.CAIPP_RUN_FLAG_ENV, False):
         # Only trigger the execution when invoked by 'run' command.
-        print('Runner run')
         runner.run(
             pipeline=pipeline,
             api_key=api_key)
     else:
-        print("Runner compile")
         runner.compile(
             pipeline=pipeline,
             write_out=True)
@@ -92,15 +93,7 @@ if __name__ == '__main__':
 #      'regions': [Config.GCP_REGION]
 #  }
 #
-#  beam_tmp_folder = '{}/beam/tmp'.format(Config.ARTIFACT_STORE_URI)
-#  beam_pipeline_args = [
-#      '--runner=DataflowRunner',
-#      '--experiments=shuffle_mode=auto',
-#      '--project=' + Config.PROJECT_ID,
-#      '--temp_location=' + beam_tmp_folder,
-#      '--region=' + Config.GCP_REGION,
-#  ]
-#    
+
 #  
 #  # Set the default values for the pipeline runtime parameters
 #    

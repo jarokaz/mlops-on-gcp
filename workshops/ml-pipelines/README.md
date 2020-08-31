@@ -64,7 +64,7 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 ```
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 --member=serviceAccount:service-${PROJECT_NUMBER}@cloud-ml.google.com.iam.gserviceaccount.com \
---role=roles/dataflow.developer
+--role=roles/dataflow.admin
 ```
 3. Set BigQuery permissions
 ```

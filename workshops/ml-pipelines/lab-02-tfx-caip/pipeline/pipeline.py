@@ -45,7 +45,7 @@ def create_pipeline(
     #eval_args: trainer_pb2.EvalArgs,
     #eval_accuracy_threshold: float,
     #metadata_connection_config: Optional[metadata_store_pb2.ConnectionConfig] = None,
-    #beam_pipeline_args: List[Text] = None,
+    beam_pipeline_args: List[Text] = None,
     #ai_platform_training_args: Dict[Text, Text] = None,
     #ai_platform_serving_args: Dict[Text, Text] = None,
     #enable_cache: Optional[bool] = False
@@ -198,7 +198,7 @@ def create_pipeline(
         pipeline_root=pipeline_root,
         components=components,
         #enable_cache=enable_cache,
-        #beam_pipeline_args=beam_pipeline_args
+        beam_pipeline_args=beam_pipeline_args
     )
 
 
