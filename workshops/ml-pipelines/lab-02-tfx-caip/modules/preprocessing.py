@@ -18,7 +18,7 @@ This file defines a template for TFX Transform component.
 import tensorflow as tf
 import tensorflow_transform as tft
 
-import features
+from modules import features
 
 def _fill_in_missing(x):
   """Replace missing values in a SparseTensor.
@@ -56,4 +56,3 @@ def preprocessing_fn(inputs):
       inputs[features.LABEL_KEY])
 
   return outputs
-

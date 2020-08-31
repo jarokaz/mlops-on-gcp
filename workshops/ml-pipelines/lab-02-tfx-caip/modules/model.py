@@ -21,7 +21,7 @@ import tensorflow_model_analysis as tfma
 import tensorflow_transform as tft
 from tensorflow_transform.tf_metadata import schema_utils
 
-import features
+from modules import features
 
 HIDDEN_UNITS = [16, 8]
 LEARNING_RATE = 0.001
@@ -49,7 +49,6 @@ def _get_serve_tf_examples_fn(model, tf_transform_output):
     parsed_features = tf.io.parse_example(serialized_tf_examples, feature_spec)
 
     transformed_features = model.tft_layer(parsed_features)
-    transformed_features.pop(features.transformed_name(features.LABEL_KEY))
 
     return model(transformed_features)
 
@@ -153,13 +152,16 @@ def _wide_and_deep_classifier(wide_columns, deep_columns, dnn_hidden_units, lear
   model.summary(print_fn=absl.logging.info)
   return model
 
-def _copy_tensorboard_logs(local_path, gcs_path):
-    """Copies Tensorboard logs from a local dir to a GCS location."""
-    pattern = '{}/*/events.out.tfevents.*'.format(local_path)
-    local_files = tf.io.gfile.glob(pattern)
-    gcs_log_files = [local_file.replace(local_path, gcs_path) for local_file in local_files]
-    for local_file, gcs_file in zip(local_files, gcs_log_files):
-        tf.io.gfile.copy(local_file, gcs_file)
+def _copy_tensorboard_logs(local_path, saved_model_path):
+    """Copies Tensorboard logs to the subfolder in the GCS SavedModel location."""
+
+    if saved_model_path[0:5] == 'gs://':
+        pattern = '{}/*/events.out.tfevents.*'.format(local_path)
+        dest_path = saved_model_path.rstrip('/') + '/' + 'logs'
+        local_files = tf.io.gfile.glob(pattern)
+        dest_log_files = [local_file.replace(local_path, dest_path) for local_file in local_files]
+        for local_file, dest_file in zip(local_files, dest_log_files):
+            tf.io.gfile.copy(local_file, dest_file)
 
 # TFX Trainer will call this function.
 def run_fn(fn_args):
@@ -204,8 +206,5 @@ def run_fn(fn_args):
   }
   
   model.save(fn_args.serving_model_dir, save_format='tf', signatures=signatures)
-  _copy_tensorboard_logs(LOCAL_LOG_DIR, fn_args.serving_model_dir + '/logs')
+  _copy_tensorboard_logs(LOCAL_LOG_DIR, fn_args.serving_model_dir)
     
-
-  
-  

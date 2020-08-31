@@ -42,21 +42,35 @@ if __name__ == '__main__':
     
     beam_tmp_folder = '{}/beam/tmp'.format(configs.ARTIFACT_STORE)
     beam_pipeline_args = [
-       '--runner=DataflowRunner',
-       '--experiments=shuffle_mode=auto',
-       '--project=' + project_id,
-       '--temp_location=' + beam_tmp_folder,
-       '--machine_type=' + configs.DATAFLOW_MACHINE_TYPE,
-       '--disk_size_gb=' + configs.DATAFLOW_DISK_SIZE,
-       '--region=' + configs.GCP_REGION]
+        '--runner=DataflowRunner',
+        '--experiments=shuffle_mode=auto',
+        '--project=' + project_id,
+        '--temp_location=' + beam_tmp_folder,
+        '--machine_type=' + configs.DATAFLOW_MACHINE_TYPE,
+        '--disk_size_gb=' + configs.DATAFLOW_DISK_SIZE,
+        '--region=' + configs.GCP_REGION]
     
-    #beam_pipeline_args = None
+    beam_pipeline_args = None
+    
+    ai_platform_training_args = {
+        'project': project_id,
+        'region': configs.GCP_REGION,
+        'masterConfig': {
+            'imageUri': tfx_image}      
+    }
+    
+    ai_platform_training_args = None
     
     pipeline = pipeline.create_pipeline(
         pipeline_name=configs.PIPELINE_NAME,
         pipeline_root=pipeline_root,
         data_root=configs.DATA_ROOT,
         schema_uri=configs.SCHEMA_URI,
+        preprocessing_fn=configs.PREPROCESSING_FN,
+        run_fn=configs.RUN_FN,
+        train_args=trainer_pb2.TrainArgs(num_steps=configs.TRAIN_NUM_STEPS),
+        eval_args=trainer_pb2.EvalArgs(num_steps=configs.EVAL_NUM_STEPS),
+        ai_platform_training_args=ai_platform_training_args,
         beam_pipeline_args=beam_pipeline_args)
    
     runner_config = ai_platform_pipelines_dag_runner.AIPlatformPipelinesDagRunnerConfig(

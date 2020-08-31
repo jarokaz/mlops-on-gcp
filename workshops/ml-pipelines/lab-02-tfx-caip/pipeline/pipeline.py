@@ -37,14 +37,14 @@ def create_pipeline(
     pipeline_root: Text,
     data_root: Text,
     schema_uri: Text,
-    #preprocessing_fn: Text,
-    #run_fn: Text,
-    #train_args: trainer_pb2.TrainArgs,
-    #eval_args: trainer_pb2.EvalArgs,
+    preprocessing_fn: Text,
+    run_fn: Text,
+    train_args: trainer_pb2.TrainArgs,
+    eval_args: trainer_pb2.EvalArgs,
     #eval_accuracy_threshold: float,
     #metadata_connection_config: Optional[metadata_store_pb2.ConnectionConfig] = None,
     beam_pipeline_args: List[Text] = None,
-    #ai_platform_training_args: Dict[Text, Text] = None,
+    ai_platform_training_args: Dict[Text, Text] = None,
     #ai_platform_serving_args: Dict[Text, Text] = None,
     #enable_cache: Optional[bool] = False
 ) -> pipeline.Pipeline:
@@ -94,11 +94,40 @@ def create_pipeline(
     
     components.append(example_validator)
   
-  #  # Performs transformations and feature engineering in training and serving.
-  #  transform = tfx.components.Transform(
-  #      examples=generate_examples.outputs.examples,
-  #      schema=import_schema.outputs.result,
-  #      module_file=TRANSFORM_MODULE_FILE)
+    # Performs transformations and feature engineering in training and serving.
+    transform = tfx.components.Transform(
+        examples=example_gen.outputs.examples,
+        schema=schema_importer.outputs.result,
+        preprocessing_fn=preprocessing_fn)
+    
+    components.append(transform)
+    
+    # Trains the model using a user provided training module
+    trainer_args = {
+      'run_fn': run_fn,
+      'transformed_examples': transform.outputs.transformed_examples,
+      'schema': schema_importer.outputs.result,
+      'transform_graph': transform.outputs.transform_graph,
+      'train_args': train_args,
+      'eval_args': eval_args,
+      'custom_executor_spec':
+          tfx.components.base.executor_spec.ExecutorClassSpec(
+              tfx.components.trainer.executor.GenericExecutor)
+       }
+    # If requested use AI Platform Training
+    if ai_platform_training_args is not None:
+        trainer_args.update({
+            'custom_executor_spec':
+                tfx.components.base.executor_spec.ExecutorClassSpec(
+                    ai_platform_trainer_executor.GenericExecutor),
+            'custom_config': {
+                ai_platform_trainer_executor.TRAINING_ARGS_KEY: ai_platform_training_args}
+    })
+        
+    trainer = tfx.components.Trainer(**trainer_args)
+    
+    components.append(trainer)
+    
   #
   #  
   #  # Trains the model using a user provided trainer function.
