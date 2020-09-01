@@ -51,7 +51,7 @@ if __name__ == '__main__':
         '--region=' + configs.GCP_REGION
     ]
     
-    beam_pipeline_args = None
+    #beam_pipeline_args = None
     
     ai_platform_training_args = {
         'project': project_id,
@@ -62,7 +62,7 @@ if __name__ == '__main__':
             'imageUri': tfx_image}      
     }
     
-    ai_platform_training_args = None
+    #ai_platform_training_args = None
     
     ai_platform_serving_args = {
         'project_id': project_id,
