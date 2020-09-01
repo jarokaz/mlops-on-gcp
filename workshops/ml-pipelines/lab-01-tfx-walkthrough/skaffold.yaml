@@ -5,7 +5,7 @@ metadata:
   name: my-pipeline
 build:
   artifacts:
-  - image: 'gcr.io/mlops-dev-env/caip-tfx-custom'
+  - image: 'gcr.io/mlops-dev-env/caip-tfx-custom-demo'
     context: .
     docker:
       dockerfile: Dockerfile
