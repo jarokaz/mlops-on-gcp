@@ -48,18 +48,31 @@ if __name__ == '__main__':
         '--temp_location=' + beam_tmp_folder,
         '--machine_type=' + configs.DATAFLOW_MACHINE_TYPE,
         '--disk_size_gb=' + configs.DATAFLOW_DISK_SIZE,
-        '--region=' + configs.GCP_REGION]
+        '--region=' + configs.GCP_REGION
+    ]
     
     beam_pipeline_args = None
     
     ai_platform_training_args = {
         'project': project_id,
         'region': configs.GCP_REGION,
+        'scaleTier': 'CUSTOM',
+        'masterType': configs.CAIP_TRAINING_MACHINE_TYPE,
         'masterConfig': {
             'imageUri': tfx_image}      
     }
     
     ai_platform_training_args = None
+    
+    ai_platform_serving_args = {
+        'project_id': project_id,
+        'model_name': configs.MODEL_NAME,
+        'runtimeVersion': configs.RUNTIME_VERSION,
+        'pythonVersion': configs.PYTHON_VERSION,
+        'regions': [configs.GCP_REGION]
+    }
+
+    #ai_platform_serving_args = None
     
     pipeline = pipeline.create_pipeline(
         pipeline_name=configs.PIPELINE_NAME,
@@ -70,7 +83,10 @@ if __name__ == '__main__':
         run_fn=configs.RUN_FN,
         train_args=trainer_pb2.TrainArgs(num_steps=configs.TRAIN_NUM_STEPS),
         eval_args=trainer_pb2.EvalArgs(num_steps=configs.EVAL_NUM_STEPS),
+        eval_accuracy_threshold=configs.EVAL_ACCURACY_THRESHOLD,
+        serving_model_dir=configs.SERVING_MODEL_DIR,
         ai_platform_training_args=ai_platform_training_args,
+        ai_platform_serving_args=ai_platform_serving_args,
         beam_pipeline_args=beam_pipeline_args)
    
     runner_config = ai_platform_pipelines_dag_runner.AIPlatformPipelinesDagRunnerConfig(
@@ -93,74 +109,9 @@ if __name__ == '__main__':
             write_out=True)
     
     
-#  # Set the values for the compile time parameters
-#    
-#  ai_platform_training_args = {
-#      'project': Config.PROJECT_ID,
-#      'region': Config.GCP_REGION,
-#      'masterConfig': {
-#          'imageUri': Config.TFX_IMAGE,
-#      }
-#  }
-#
-#  ai_platform_serving_args = {
-#      'project_id': Config.PROJECT_ID,
-#      'model_name': Config.MODEL_NAME,
-#      'runtimeVersion': Config.RUNTIME_VERSION,
-#      'pythonVersion': Config.PYTHON_VERSION,
-#      'regions': [Config.GCP_REGION]
-#  }
-#
 
-#  
-#  # Set the default values for the pipeline runtime parameters
-#    
-#  data_root_uri = data_types.RuntimeParameter(
-#      name='data-root-uri',
-#      default=Config.DATA_ROOT_URI,
-#      ptype=Text
-#  )
-#
-#  train_steps = data_types.RuntimeParameter(
-#      name='train-steps',
-#      default=5000,
-#      ptype=int
-#  )
-#    
-#  eval_steps = data_types.RuntimeParameter(
-#      name='eval-steps',
-#      default=500,
-#      ptype=int
-#  )
-#
-#  pipeline_root = '{}/{}/{}'.format(
-#      Config.ARTIFACT_STORE_URI, 
-#      Config.PIPELINE_NAME,
-#      kfp.dsl.RUN_ID_PLACEHOLDER)
-#    
-#  # Set KubeflowDagRunner settings
-#  metadata_config = kubeflow_dag_runner.get_default_kubeflow_metadata_config()
-#
-#  runner_config = kubeflow_dag_runner.KubeflowDagRunnerConfig(
-#      kubeflow_metadata_config = metadata_config,
-#      pipeline_operator_funcs = kubeflow_dag_runner.get_default_pipeline_operator_funcs(
-#          Config.USE_KFP_SA == 'True'),
-#      tfx_image=Config.TFX_IMAGE)
-#
-#  # Compile the pipeline
-#  kubeflow_dag_runner.KubeflowDagRunner(config=runner_config).run(
-#      create_pipeline(
-#        pipeline_name=Config.PIPELINE_NAME,
-#        pipeline_root=pipeline_root,
-#        data_root_uri=data_root_uri,
-#        train_steps=train_steps,
-#        eval_steps=eval_steps,
-#        ai_platform_training_args=ai_platform_training_args,
-#        ai_platform_serving_args=ai_platform_serving_args,
-#        beam_pipeline_args=beam_pipeline_args))
-#     
-#        
-#
+
+
 
 
 

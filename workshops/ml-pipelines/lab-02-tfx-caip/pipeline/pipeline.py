@@ -31,6 +31,8 @@ from tfx.types import standard_artifacts
 
 
 SCHEMA_FOLDER = 'schema'
+EVAL_ACCURACY_UPPER_BOUND = 0.995
+CHANGE_THRESHOLD = 0.0001
 
 def create_pipeline(
     pipeline_name: Text,
@@ -41,12 +43,12 @@ def create_pipeline(
     run_fn: Text,
     train_args: trainer_pb2.TrainArgs,
     eval_args: trainer_pb2.EvalArgs,
-    #eval_accuracy_threshold: float,
-    #metadata_connection_config: Optional[metadata_store_pb2.ConnectionConfig] = None,
+    eval_accuracy_threshold: float,
+    serving_model_dir: Text,
     beam_pipeline_args: List[Text] = None,
     ai_platform_training_args: Dict[Text, Text] = None,
-    #ai_platform_serving_args: Dict[Text, Text] = None,
-    #enable_cache: Optional[bool] = False
+    ai_platform_serving_args: Dict[Text, Text] = None,
+    enable_cache: Optional[bool] = False
 ) -> pipeline.Pipeline:
     """Trains and deploys the Covertype classifier."""
 
@@ -128,67 +130,73 @@ def create_pipeline(
     
     components.append(trainer)
     
-  #
-  #  
-  #  # Trains the model using a user provided trainer function.
-  #  train = tfx.components.Trainer(
-  #      custom_executor_spec=executor_spec.ExecutorClassSpec(
-  #          ai_platform_trainer_executor.GenericExecutor),
-  ##      custom_executor_spec=executor_spec.ExecutorClassSpec(trainer_executor.GenericExecutor),
-  #      module_file=TRAIN_MODULE_FILE,
-  #      transformed_examples=transform.outputs.transformed_examples,
-  #      schema=import_schema.outputs.result,
-  #      transform_graph=transform.outputs.transform_graph,
-  #      train_args={'num_steps': train_steps},
-  #      eval_args={'num_steps': eval_steps},
-  #      custom_config={'ai_platform_training_args': ai_platform_training_args})
-  #
-  #  # Get the latest blessed model for model validation.
-  #  resolve = tfx.components.ResolverNode(
-  #      instance_name='latest_blessed_model_resolver',
-  #      resolver_class=latest_blessed_model_resolver.LatestBlessedModelResolver,
-  #      model=Channel(type=Model),
-  #      model_blessing=Channel(type=ModelBlessing))
-  #
-  #  # Uses TFMA to compute a evaluation statistics over features of a model.
-  #  accuracy_threshold = tfma.MetricThreshold(
-  #                value_threshold=tfma.GenericValueThreshold(
-  #                    lower_bound={'value': 0.5},
-  #                    upper_bound={'value': 0.99}),
-  #                change_threshold=tfma.GenericChangeThreshold(
-  #                    absolute={'value': 0.0001},
-  #                    direction=tfma.MetricDirection.HIGHER_IS_BETTER),
-  #                )
-  #
-  #  metrics_specs = tfma.MetricsSpec(
-  #                   metrics = [
-  #                       tfma.MetricConfig(class_name='SparseCategoricalAccuracy',
-  #                           threshold=accuracy_threshold),
-  #                       tfma.MetricConfig(class_name='ExampleCount')])
-  #
-  #  eval_config = tfma.EvalConfig(
-  #    model_specs=[
-  #        tfma.ModelSpec(label_key='Cover_Type')
-  #    ],
-  #    metrics_specs=[metrics_specs],
-  #    slicing_specs=[
-  #        tfma.SlicingSpec(),
-  #        tfma.SlicingSpec(feature_keys=['Wilderness_Area'])
-  #    ]
-  #  )
-  #  
-  #
-  #  analyze = tfx.components.Evaluator(
-  #      examples=generate_examples.outputs.examples,
-  #      model=train.outputs.model,
-  #      baseline_model=resolve.outputs.model,
-  #      eval_config=eval_config
-  #  )
-  #
+    # Get the latest blessed model for model validation.
+    resolver = tfx.components.ResolverNode(
+        instance_name='latest_blessed_model_resolver',
+        resolver_class=(
+            tfx.dsl.experimental.latest_blessed_model_resolver.LatestBlessedModelResolver),
+        model=tfx.types.Channel(
+            type=tfx.types.standard_artifacts.Model),
+        model_blessing=tfx.types.Channel(
+            type=tfx.types.standard_artifacts.ModelBlessing))
+    
+    components.append(resolver)
   
+    # Uses TFMA to compute a evaluation statistics over features of a model.
+    accuracy_threshold = tfma.MetricThreshold(
+        value_threshold=tfma.GenericValueThreshold(
+            lower_bound={'value': eval_accuracy_threshold},
+            upper_bound={'value': EVAL_ACCURACY_UPPER_BOUND}),
+        change_threshold=tfma.GenericChangeThreshold(
+            absolute={'value': CHANGE_THRESHOLD},
+            direction=tfma.MetricDirection.HIGHER_IS_BETTER))
   
-  # Checks whether the model passed the validation steps and pushes the model
-  # to a file destination if check passed.
+    metrics_specs = tfma.MetricsSpec(
+        metrics = [
+            tfma.MetricConfig(class_name='SparseCategoricalAccuracy',
+            threshold=accuracy_threshold),
+            tfma.MetricConfig(class_name='ExampleCount')])
+  
+    eval_config = tfma.EvalConfig(
+        model_specs=[
+            tfma.ModelSpec(label_key='Cover_Type')],
+        metrics_specs=[metrics_specs],
+        slicing_specs=[
+            tfma.SlicingSpec(),
+            tfma.SlicingSpec(feature_keys=['Wilderness_Area'])])
+    
+    evaluator = tfx.components.Evaluator(
+        examples=example_gen.outputs.examples,
+        model=trainer.outputs.model,
+        #baseline_model=resolver.outputs.model,
+        eval_config=eval_config)
+
+    components.append(evaluator)
+  
+    pusher_args = {
+        'model':
+            trainer.outputs.model,
+        'model_blessing':
+            evaluator.outputs.blessing,
+        'push_destination':
+            pusher_pb2.PushDestination(
+                filesystem=pusher_pb2.PushDestination.Filesystem(
+                    base_directory=serving_model_dir))}
+    
+    if ai_platform_serving_args is not None:
+        pusher_args.update({
+            'custom_executor_spec':
+                tfx.components.base.executor_spec.ExecutorClassSpec(
+                    ai_platform_pusher_executor.Executor),
+            'custom_config': {
+                ai_platform_pusher_executor.SERVING_ARGS_KEY: ai_platform_serving_args},
+        })
+        
+    pusher = tfx.components.Pusher(**pusher_args)
+    components.append(pusher)
+    
+    # Checks whether the model passed the validation steps and pushes the model
+    # to a file destination or AI Platform Prediction if check passed.
   #  deploy = tfx.components.Pusher(
   #      model=train.outputs['model'],
   #      model_blessing=analyze.outputs['blessing'],

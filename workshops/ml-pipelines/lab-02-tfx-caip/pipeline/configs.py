@@ -28,8 +28,9 @@ PREPROCESSING_FN = os.getenv("PREPROCESSING_FN", "modules.preprocessing.preproce
 RUN_FN = os.getenv("RUN_FUN", "modules.model.run_fn")
 TRAIN_NUM_STEPS = os.getenv("TRAIN_NUM_STEPS", 5000)
 EVAL_NUM_STEPS = os.getenv("EVAL_NUM_STEPS", 500)
-
-
-#MODEL_NAME=os.getenv("MODEL_NAME", "covertype_classifier")
-#RUNTIME_VERSION=os.getenv("RUNTIME_VERSION", "2.1")
-#PYTHON_VERSION=os.getenv("PYTHON_VERSION", "3.7")
+CAIP_TRAINING_MACHINE_TYPE = os.getenv("CAIP_TRAINING_MACHINE_TYPE", "n1-standard-8")
+SERVING_MODEL_DIR = os.getenv("SERVING_MODEL_DIR", "gs://mlops-dev-env-artifact-store/models/covertype")
+EVAL_ACCURACY_THRESHOLD = os.getenv("EVAL_ACCURACY_THRESHOLD", 0.5)
+MODEL_NAME=os.getenv("MODEL_NAME", "covertype_classifier")
+RUNTIME_VERSION=os.getenv("RUNTIME_VERSION", "2.1")
+PYTHON_VERSION=os.getenv("PYTHON_VERSION", "3.7")
