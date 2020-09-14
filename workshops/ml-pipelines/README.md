@@ -115,7 +115,13 @@ jupyter nbextension enable --py widgetsnbextension
 jupyter nbextension install --py --sys-prefix --symlink tensorflow_model_analysis
 jupyter nbextension enable --py --sys-prefix tensorflow_model_analysis
 ```
-
+### Cloning the workshop repository
+From the JupyterLab terminal:
+```
+cd
+git clone https://github.com/jarokaz/mlops-on-gcp.git
+cd mlops-on-gcp
+```
 
 ## Summary of lab exercises
 
