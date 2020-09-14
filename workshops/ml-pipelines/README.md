@@ -103,7 +103,6 @@ curl -Lo skaffold  https://storage.googleapis.com/skaffold/releases/latest/skaff
 3. Install TFX SDK
 ```
 pip install pip --upgrade
-export SDK_VERSION='tfx-0.22.0.caip.latest-py3-none-any.whl'
 export SDK_VERSION='tfx-0.23.0.caip.latest-py3-none-any.whl'
 export SDK_LOCATION=gs://caip-pipelines-sdk/releases/latest/${SDK_VERSION}
 gsutil cp ${SDK_LOCATION} /tmp/${SDK_VERSION} 
